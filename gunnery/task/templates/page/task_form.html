@@ -8,16 +8,18 @@
 {% endblock %}
 
 {% block content %}
-    <h1>
-        {% model_icon 'task' %}
-        {% if is_new %}Add task{% else %}<span class="long-title">Task</span> <em>{{ task.name }}</em>{% endif %}
-        {% if not is_new %}
-            <div class=" pull-right">
-                <a href="{% url 'task_execute_page' task_id=task.id %}" role="button" class="btn btn-default"><i
-                        class="fa fa-bolt"></i> Execute</a>
-            </div>
+    <div class="row">
+        <h1 class="col-sm-10">
+            {% model_icon 'task' %}
+            {% if is_new %}Add task{% else %}<span class="long-title">Task</span> <em>{{ task.name }}</em>{% endif %}
+        </h1>
+        {% if task %}
+        <h1 class="col-sm-2 text-right">
+            <a href="{% url 'task_execute_page' task_id=task.id %}" role="button" class="btn btn-default"><i
+                    class="fa fa-bolt"></i> Execute</a>
+        </h1>
         {% endif %}
-    </h1>
+    </div>
     <div class="clearfix"></div>
 
     <ol class="breadcrumb">
@@ -66,8 +68,8 @@
 
         <div class="row">
             <div class="col-sm-offset-1">
-                <label>Commands* </label> <a href="#" data-toggle="element" data-target="#command-help"><i
-                    class="fa fa-question"></i></a>
+                <label>Commands* </label>
+                <a id="comamnd-help-toggle" data-toggle="element" data-target="#command-help"><i class="fa fa-question"></i></a>
             </div>
         </div>
         {{ form_commands.non_field_errors }}
@@ -76,11 +78,11 @@
                 <p>
                     Commands are executed in non-login, non-interactive shell.
                     It's allowed to use stream redirection and pipes in commands. Examples:
-                </p>Remove description
+                </p>
                 <ul>
-                    <li>timestamped backup - <code>tar -cpzf /home/backup/backup-${gun_time}.tar.gz /var/www/</code></li>
-                    <li>clear memcached - <code>( sleep 3 ; echo 'flush_all' ; sleep 2 ; echo q; echo q; ) | telnet 127.0.0.1 11211 -eq</code></li>
-                    <li><code>cd /var/www/your_project; make all</code></li>
+                    <li>timestamped backup: <code>tar -cpzf /home/backup/backup-${gun_time}.tar.gz /var/www/</code></li>
+                    <li>clear memcached: <code>( sleep 3 ; echo 'flush_all' ; sleep 2 ; echo q; echo q; ) | telnet 127.0.0.1 11211 -eq</code></li>
+                    <li>make: <code>cd /var/www/your_project; make all</code></li>
                 </ul>
                 <p>
                     To use custom parameters in commands include <code>${parameter_name}</code>.

@@ -14,14 +14,14 @@ class Department(models.Model):
     name = models.CharField(blank=False, max_length=128, validators=[gunnery_name()], unique=True)
 
     class Meta:
+        ordering = ['name']
         permissions = (
         ("view_department", "Can view department"),
-        ("edit_department", "Can edit department"),
-        ("execute_department", "Can execute department"),
-        ("manage_department", "Can manage department"), )
+        ("execute_department", "Can execute department"), )
 
     def __unicode__(self):
         return self.name
+
 
 
 class Application(models.Model):
@@ -29,10 +29,10 @@ class Application(models.Model):
     department = models.ForeignKey(Department, related_name="applications")
 
     class Meta:
+        ordering = ['name']
         unique_together = ("department", "name")
         permissions = (
         ("view_application", "Can view application"),
-        ("edit_application", "Can edit application"),
         ("execute_application", "Can execute tasks on application"), )
 
     def get_absolute_url(self):
@@ -43,15 +43,6 @@ class Application(models.Model):
 
         return Execution.get_inline_by_application(self.id)
 
-    @staticmethod
-    def create_notifications(sender, instance, created, **kwargs):
-        """ Set new notifications for all users from same department
-        """
-        if created:
-            from event.models import NotificationPreferences
-            NotificationPreferences.initialize_for_all_users(instance.department_id, 'ExecutionFinish', instance)
-post_save.connect(Application.create_notifications, sender=Application)
-
 
 class Environment(models.Model):
     name = models.CharField(blank=False, max_length=128, validators=[gunnery_name()])
@@ -59,10 +50,10 @@ class Environment(models.Model):
     is_production = models.BooleanField(default=False)
 
     class Meta:
+        ordering = ['name']
         unique_together = ("application", "name")
         permissions = (
         ("view_environment", "Can view environment"),
-        ("edit_environment", "Can edit environment"),
         ("execute_environment", "Can execute tasks on environment"), )
 
     def get_absolute_url(self):
@@ -113,6 +104,13 @@ class ServerRole(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @staticmethod
+    def on_create_department(sender, instance, created, **kwargs):
+        for server_role in ['app', 'db', 'cache']:
+            ServerRole(name=server_role, department=instance).save()
+
+post_save.connect(ServerRole.on_create_department, sender=Department)
 
 
 class Server(models.Model):

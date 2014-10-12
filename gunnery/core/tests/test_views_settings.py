@@ -13,7 +13,10 @@ class SettingsTest(LoggedTestCase):
 
     def test_user_notifications(self):
         response = self.client.get('/settings/account/notifications/')
-        self.assertContains(response, 'Save')
+        self.assertEqual(response.status_code, 200)
+        application = ApplicationFactory(department=self.department)
+        response = self.client.get('/settings/account/notifications/')
+        self.assertContains(response, application.name)
 
     def test_user_notifications_save(self):
         application = ApplicationFactory(department=self.department)
@@ -62,9 +65,6 @@ class SettingsManagerTest(SettingsTest):
         self.assertContains(response, 'Create')
 
     def test_department_serverroles(self):
-        response = self.client.get('/settings/department/serverroles/')
-        self.assertContains(response, 'No roles yet.')
-
         server_role = ServerRoleFactory(department=self.department)
         response = self.client.get('/settings/department/serverroles/')
         self.assertContains(response, server_role.name)

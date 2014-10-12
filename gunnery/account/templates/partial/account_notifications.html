@@ -2,6 +2,7 @@
 {% load core_extras %}
 <div class="row">
     <div class="col col-sm-offset-1 col-sm-9 col-md-offset-3 col-md-6 col-lg-offset-3 col-lg-6 ">
+        {% if applications %}
         <form class="form-horizontal" role="form" method="POST" action="{{ request_path }}">
             {% csrf_token %}
 
@@ -23,12 +24,7 @@
                             <th class="text-center">Email</th>
                         </tr>
                     </thead>
-                    {% for department in departments %}
-                        <tr>
-                            <td>{{ department.name }}</td>
-                            <td></td>
-                        </tr>
-                        {% for application in department.applications.all %}
+                        {% for application in applications %}
                             <tr>
                                 <td class="application">{{ application.name }}</td>
                                 <td class="text-center">
@@ -37,7 +33,6 @@
                                 </td>
                             </tr>
                         {% endfor %}
-                    {% endfor %}
                 </table>
             </div>
 
@@ -48,5 +43,8 @@
                 </div>
             </div>
         </form>
+        {% else %}
+            No applications available to set notifications.
+        {% endif %}
     </div>
 </div>

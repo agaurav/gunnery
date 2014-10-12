@@ -3,8 +3,6 @@ Overview
 
 Gunnery is a multipurpose task execution tool for distributed systems with web-based interface.
 
-.. @todo project goal an philosophy
-
 Features
 ~~~~~~~~
 
@@ -28,10 +26,6 @@ Features
     User notifications
         Team members will be notified when tasks are executed
 
-Dependencies
-~~~~~~~~~~~~
+    Permission system
+        Create custom user groups and limit their access to specific environments or tasks
 
-Following list presents all packages required to run project:
-
-.. include:: ../requirements/common.txt
-   :literal:

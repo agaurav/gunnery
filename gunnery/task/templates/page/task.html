@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 {% load core_extras %}
+{% load task_extras %}
+{% load guardian_tags %}
 
 {% block content %}
-    <h1>{% model_icon 'task' %} <span class="long-title">Task</span> <em>{{ task.name }}</em>
-
-        <div class=" pull-right">
+    {% get_obj_perms user for task as "task_perms" %}
+    <div class="row">
+        <h1 class="col-md-7">
+            {% model_icon 'task' %} <span class="long-title">Task</span> <em>{{ task.name }}</em>
+        </h1>
+        <h1 class="col-md-5 text-right">
+            {% if 'execute_task' in task_perms %}
             <a href="{% url 'task_execute_page' task_id=task.id %}" role="button" class="btn btn-default"><i
                     class="fa fa-bolt"></i> Execute</a>
+            {% endif %}
+            {% if 'change_task' in task_perms %}
             <a href="{% url 'task_form_page' task_id=task.id %}" type="submit" class="btn btn-default"><i
                     class="fa fa-edit"></i></a>
-        </div>
-    </h1>
+            {% endif %}
+        </h1>
+    </div>
     <div class="clearfix"></div>
 
     <ol class="breadcrumb">
@@ -21,7 +30,7 @@
         <li class="active">{% model_icon 'task' %} {{ task.name }}</li>
     </ol>
 
-    {% include "partial/execution_list_inline.html" with list=task.executions_inline model_name='task' id=task.id %}
+    {% last_activity_bar related_to=task %}
 
     <p>{{ task.description }}</p>
 

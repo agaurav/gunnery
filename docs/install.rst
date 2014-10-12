@@ -3,8 +3,16 @@ Installation
 
 Instructions on this page will guide you through installation process. You can choose to use puppet tool or setup everything manually.
 
-Shortcut using Puppet
-~~~~~~~~~~~~~~~~~~~~~
+Dependencies
+~~~~~~~~~~~~
+
+Supported python version is 2.7, below is the list of packages required to run project:
+
+.. include:: ../requirements/common.txt
+   :literal:
+
+Provisioning with Puppet
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Gunnery repository contains puppet manifests, which can help setting up infrastructure required to run application.
 Puppet manifests are supported for systems:
@@ -31,8 +39,8 @@ The last step is to edit ``/var/gunnery/gunnery/gunnery/settings/production.py``
 ``ALLOWED_HOSTS`` directive to the domain (or IP address) that your instance will be running on.
 Boom, if everything went well you have working application.
 
-Installation
-~~~~~~~~~~~~
+Manual Installation
+~~~~~~~~~~~~~~~~~~~
 
 Gunnery may seem like a simple app, but it depends on a few components.
 This document will guide you through the process of installing all of
@@ -52,7 +60,7 @@ Debian-based and that all services are running on a single machine.
                 +----------> Queue <-----------+
 
 Setup Database
-~~~~~~~~~~~~~~
+--------------
 
 PostgreSQL is the recommended database for Django projects, although
 other types may be used as well.
@@ -76,7 +84,7 @@ In short:
     sudo -u postgres createdb -O gunnery gunnery
 
 Setup Application
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Download the gunnery application by cloning the repository. The
 recommended path is ``/var/gunnery``:
@@ -105,6 +113,7 @@ prepare the static files.
 ::
 
     export DJANGO_SETTINGS_MODULE="gunnery.settings.production"
+    export SECRET_KEY="<insert random string here>"
     python manage.py syncdb # synchronize gunnery schema to postgres
     python manage.py migrate # run any necessary database schema migrations
     python manage.py collectstatic # prepare static files to be served
@@ -121,8 +130,8 @@ Optionally you can build html documentation with command: ::
     cd /var/gunnery/docs
     make htmlembedded
 
-Install Messaging Queue
-~~~~~~~~~~~~~~~~~~~~~~~
+Install RabbitMQ
+----------------
 
 Celery requires a messaging queue for its operation, RabbitMQ being the
 recommended option. Refer to the Celery documentation for information
@@ -133,7 +142,7 @@ about using alternatives.
     sudo apt-get install rabbitmq
 
 Configure Celery
-~~~~~~~~~~~~~~~~
+----------------
 
 Celery was installed in a previous step (``pip install``), it needs to be configured now.
 
@@ -148,7 +157,7 @@ Celery was installed in a previous step (``pip install``), it needs to be config
     sudo service celeryd start
 
 Configure uWSGI
-~~~~~~~~~~~~~~~
+---------------
 
 We're going to use uWSGI to manage our Python processes. Just like celery it was installed by pip as a dependency. We need
 to create init script for it. Copy the example file and adjust variables (search for ``<% ... %>``)
@@ -188,7 +197,7 @@ the logs for errors, and validate if the socket file exists.
     sudo service uwsgi start
 
 Install Nginx
-~~~~~~~~~~~~~
+-------------
 
 No magic here. Simply install, copy the provided template, and customize
 to your needs.
